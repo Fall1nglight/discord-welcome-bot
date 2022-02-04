@@ -1,0 +1,25 @@
+{
+  "name": "welcome-bot",
+  "version": "1.0.0",
+  "description": "Simple discord bot that sends configurable welcome messages",
+  "main": "index.js",
+  "scripts": {
+    "dc": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "Szabi#9906",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^13.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-node": "^4.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.1"
+  }
+}
