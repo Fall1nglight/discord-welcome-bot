@@ -3,7 +3,15 @@ const fs = require('fs');
 
 const { token } = require('../config.json');
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const myIntents = new Intents();
+myIntents.add(
+  Intents.FLAGS.GUILDS,
+  Intents.FLAGS.GUILD_PRESENCES,
+  Intents.FLAGS.GUILD_MEMBERS,
+  Intents.FLAGS.GUILD_MESSAGES
+);
+
+const client = new Client({ intents: myIntents });
 client.commands = new Collection();
 
 const commandFiles = fs

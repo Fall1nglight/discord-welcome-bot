@@ -16,6 +16,7 @@
     "func-names": "off",
     "no-restricted-syntax": "off",
     "no-underscore-dangle": "off",
+    "no-plusplus": "off",
     "consistent-return": "off",
     "global-require": "off",
     "import/no-dynamic-require": "off",
