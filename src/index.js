@@ -3,6 +3,16 @@ const fs = require('fs');
 
 const { token } = require('../config.json');
 
+// todo
+// check if the message isn't DM
+// check pinged user's role position
+// check the user's role position who initiated the interaction
+// compare these two
+// sort commands by categories
+// check if user is bannable
+// find a workaround userId interaction option
+// testing
+
 const myIntents = new Intents();
 myIntents.add(
   Intents.FLAGS.GUILDS,

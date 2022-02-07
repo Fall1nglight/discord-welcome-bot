@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
+const { tiers } = require('../utils/utils');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,13 +9,6 @@ module.exports = {
 
   async execute(interaction) {
     await interaction.deferReply();
-
-    const tiers = {
-      NONE: 'Guild has not unlocked any Server Boost perks',
-      TIER_1: 'Guild has unlocked Server Boost level 1 perks',
-      TIER_2: 'Guild has unlocked Server Boost level 2 perks',
-      TIER_3: 'Guild has unlocked Server Boost level 3 perks',
-    };
 
     const {
       member: {

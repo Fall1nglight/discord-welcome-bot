@@ -2,8 +2,8 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('kick')
-    .setDescription('Kicks a member')
+    .setName('ban')
+    .setDescription('Bans a member')
     .addUserOption((option) =>
       option
         .setName('target')
@@ -12,14 +12,26 @@ module.exports = {
     )
     .addStringOption((option) =>
       option.setName('string').setDescription('Reason')
+    )
+    .addIntegerOption((option) =>
+      option
+        .setName('int')
+        .setDescription('Number of days of messages to delete')
     ),
 
   async execute(interaction) {
-    const member = interaction.options.getMember('target');
+    const user = interaction.options.getUser('target');
     const reason =
       interaction.options.getString('string') || 'No reason was given.';
+    const days = interaction.options.getInteger('int');
 
-    member.kick(reason);
-    await interaction.reply(`Kicked ${member}!`);
+    const {
+      member: { guild },
+    } = interaction;
+
+    // ? check
+    guild.members.ban(user, { days, reason });
+
+    await interaction.reply('');
   },
 };
