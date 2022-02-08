@@ -2,6 +2,7 @@ const { Client, Collection, Intents } = require('discord.js');
 const fs = require('fs');
 
 const { token } = require('../config.json');
+const { registerEvents, registerCommands } = require('./utils/registry');
 
 // todo
 // check if the message isn't DM
@@ -33,18 +34,15 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-const eventFiles = fs
-  .readdirSync('./src/events')
-  .filter((file) => file.endsWith('.js'));
-
-for (const file of eventFiles) {
-  const event = require(`./events/${file}`);
-
-  if (event.once) {
-    client.once(event.name, (...args) => event.execute(...args));
-  } else {
-    client.on(event.name, (...args) => event.execute(...args, client));
-  }
-}
-
 client.login(token);
+
+(async () => {
+  await registerEvents(client);
+  await registerCommands(client);
+
+  try {
+    client.login(token);
+  } catch (error) {
+    console.error(error);
+  }
+})();

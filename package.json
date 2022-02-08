@@ -7,6 +7,9 @@
     "dc": "node src/index.js",
     "deploy": "node src/deploy-commands.js"
   },
+  "engines": {
+    "node": ">=16.6.0"
+  },
   "keywords": [],
   "author": "Szabi#9906",
   "license": "ISC",
