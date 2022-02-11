@@ -1,10 +1,33 @@
-const tiers = {
-  NONE: 'Guild has not unlocked any Server Boost perks',
-  TIER_1: 'Guild has unlocked Server Boost level 1 perks',
-  TIER_2: 'Guild has unlocked Server Boost level 2 perks',
-  TIER_3: 'Guild has unlocked Server Boost level 3 perks',
+/* eslint-disable no-await-in-loop */
+const fs = require('fs/promises');
+const path = require('path');
+
+const readFiles = async (givenPath) => {
+  const results = [];
+
+  const core = async (dir) => {
+    const dirPath = path.join(__dirname, '../', dir);
+    const files = await fs.readdir(dirPath);
+
+    for (const file of files) {
+      const filePath = path.join(__dirname, '../', dir, file);
+      const stat = await fs.lstat(filePath);
+
+      if (stat.isDirectory()) {
+        const nextDir = path.join(dir, file);
+        await core(nextDir);
+      }
+
+      if (file.endsWith('.js')) {
+        results.push(filePath);
+      }
+    }
+  };
+
+  await core(givenPath);
+  return results;
 };
 
 module.exports = {
-  tiers,
+  readFiles,
 };
