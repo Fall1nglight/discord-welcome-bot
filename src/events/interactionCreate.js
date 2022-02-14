@@ -1,3 +1,5 @@
+const { checkPerm } = require('../utils/utils');
+
 module.exports = {
   name: 'interactionCreate',
   once: false,
@@ -11,6 +13,13 @@ module.exports = {
     console.log(
       `${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`
     );
+
+    // if the command has permissions
+    if (command.clientPerms) {
+      if (!checkPerm(interaction.member, command.clientPerms)) {
+        return interaction.reply('You cannot use this command!');
+      }
+    }
 
     try {
       await command.execute(interaction, client);

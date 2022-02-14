@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { Permissions } = require('discord.js');
 const axios = require('axios').default;
 const randomUseragent = require('random-useragent');
 
@@ -6,6 +7,8 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('random-joke')
     .setDescription('Gets you a random joke'),
+
+  clientPerms: [Permissions.FLAGS.SEND_MESSAGES],
 
   async execute(interaction) {
     const API_URL = 'https://icanhazdadjoke.com/';

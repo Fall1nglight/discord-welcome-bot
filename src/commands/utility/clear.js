@@ -17,6 +17,9 @@ module.exports = {
       option.setName('user').setDescription('Specific user messages')
     ),
 
+  // todo
+  // use optional chaining (?)
+
   async execute(interaction, client) {
     const { channelId } = interaction;
     const channel = client.channels.cache.get(channelId);

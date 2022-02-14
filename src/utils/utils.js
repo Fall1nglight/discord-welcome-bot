@@ -28,6 +28,9 @@ const readFiles = async (givenPath) => {
   return results;
 };
 
+const checkPerm = (member, perm) => member.permissions.has(perm);
+
 module.exports = {
   readFiles,
+  checkPerm,
 };
