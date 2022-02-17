@@ -30,25 +30,22 @@ module.exports = {
   async execute(interaction) {
     await interaction.reply('Please write the answers in different messages');
 
+    let counter = 0;
+    const currEmojis = [];
     const numOfAnswers = interaction.options.getInteger('int');
-    const pollTime = interaction.options.getInteger('timeout');
-    const filter = (m) => interaction.user.id === m.author.id;
+    const pollTime = interaction.options.getInteger('timeout') || 10000;
+    const userFilter = (m) => interaction.user.id === m.author.id;
+    const reactionFilter = (reaction) =>
+      currEmojis.includes(reaction.emoji.name);
 
     try {
       const messages = await interaction.channel.awaitMessages({
-        filter,
+        filte: userFilter,
         time: 20000,
         max: numOfAnswers,
         errors: ['time'],
       });
 
-      // ? mit szeretnénk
-      // az üzeneteket összegyűjtjük egy collection-be
-      // ebből a collectionből kell csinálnunk egy stringet, ahol
-      // minden egyes kérdés egy új betűvel kezdődik abc sorrend
-      // szerint
-
-      let counter = 0;
       const answers = messages
         .map((message) => {
           counter++;
@@ -57,29 +54,38 @@ module.exports = {
         .join('\n');
 
       const pollMessage = await interaction.followUp(answers);
-      const currEmojis = [];
 
-      for (let i = 1; i <= numOfAnswers; i++) {
-        await pollMessage.react(`${pollEmojis[i]}`);
-        currEmojis.push(pollEmojis[i]);
-      }
-
-      const reactionFilter = (reaction, user) =>
-        currEmojis.includes(reaction.emoji.name);
-
+      console.log('Start colelcting messages..');
       const collector = pollMessage.createReactionCollector({
         filter: reactionFilter,
         time: pollTime,
       });
 
+      console.log('Reacting to poll..');
+      for (let i = 1; i <= numOfAnswers; i++) {
+        await pollMessage.react(`${pollEmojis[i]}`);
+        currEmojis.push(pollEmojis[i]);
+      }
+
+      // todo
+      // ? use createRectionCollector or awaitReactions
+      // if we use awaitReactions, we need to warn users
+      // to wait untel the bot is finished with the initial
+      // reaction
+      let pollResult;
       collector.on('end', (collected) => {
-        console.log(`Collected ${collected.size} items`);
+        pollResult = collected.filter((reaction) => reaction.count > 1);
       });
 
-      // create a message with the given answers
-      // then attach a reaction collector
-      // limit time
-      // then colelct the reactions and send back the result of the poll
+      console.log({ pollResult });
+
+      // ? how to display results
+
+      // let result = '';
+      // currEmojis.forEach((emoji) => {
+      //   console.log(`Searching for ${emoji}`);
+      //   console.log(pollResult.get(emoji));
+      // });
     } catch (error) {
       console.log(error);
       await interaction.followUp('You did not enter any input!');

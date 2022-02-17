@@ -19,11 +19,6 @@ const registerCommands = async (client, givenPath) => {
 
   for (const file of commandFiles) {
     const command = require(file);
-
-    if (!command.clientPerms) {
-      console.log(`Command '${command.data.name}' has no permission(s).`);
-    }
-
     client.commands.set(command.data.name, command);
   }
 };
