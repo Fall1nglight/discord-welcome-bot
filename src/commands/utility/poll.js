@@ -30,10 +30,9 @@ module.exports = {
   async execute(interaction) {
     await interaction.reply('Please write the answers in different messages');
 
-    let counter = 0;
-    const currEmojis = [];
     const numOfAnswers = interaction.options.getInteger('int');
     const pollTime = interaction.options.getInteger('timeout') || 10000;
+    const currEmojis = pollEmojis.slice(0, numOfAnswers);
     const userFilter = (m) => interaction.user.id === m.author.id;
     const reactionFilter = (reaction) =>
       currEmojis.includes(reaction.emoji.name);
@@ -46,46 +45,23 @@ module.exports = {
         errors: ['time'],
       });
 
-      const answers = messages
-        .map((message) => {
-          counter++;
-          return `${pollEmojis[counter]} - ${message.content}`;
-        })
+      const answers = Array.from(messages.values())
+        .map((message, i) => `${pollEmojis[i]} : ${message.content}`)
         .join('\n');
 
       const pollMessage = await interaction.followUp(answers);
-
-      console.log('Start colelcting messages..');
       const collector = pollMessage.createReactionCollector({
         filter: reactionFilter,
         time: pollTime,
       });
 
-      console.log('Reacting to poll..');
-      for (let i = 1; i <= numOfAnswers; i++) {
-        await pollMessage.react(`${pollEmojis[i]}`);
-        currEmojis.push(pollEmojis[i]);
-      }
-
-      // todo
-      // ? use createRectionCollector or awaitReactions
-      // if we use awaitReactions, we need to warn users
-      // to wait untel the bot is finished with the initial
-      // reaction
-      let pollResult;
-      collector.on('end', (collected) => {
-        pollResult = collected.filter((reaction) => reaction.count > 1);
+      currEmojis.forEach(async (emoji) => {
+        await pollMessage.react(emoji);
       });
 
-      console.log({ pollResult });
-
-      // ? how to display results
-
-      // let result = '';
-      // currEmojis.forEach((emoji) => {
-      //   console.log(`Searching for ${emoji}`);
-      //   console.log(pollResult.get(emoji));
-      // });
+      collector.on('end', (collected) => {
+        const pollResult = collected.filter((reaction) => reaction.count > 1);
+      });
     } catch (error) {
       console.log(error);
       await interaction.followUp('You did not enter any input!');
