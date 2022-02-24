@@ -7,6 +7,9 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('poll')
     .setDescription('Creates a poll')
+    .addStringOption((option) =>
+      option.setName('string').setDescription('Poll question').setRequired(true)
+    )
     .addIntegerOption((option) =>
       option
         .setName('int')
@@ -33,7 +36,7 @@ module.exports = {
     // clear user messages
     // avoid using followUp()
     // correct try-catch
-    // correct variable naming
+    // correct variable naming - done
     // prompt user the question
     // use embed with emojis
     // set default poll time to 30s
@@ -42,6 +45,9 @@ module.exports = {
     const defaultPromptTime = 20000;
     const defaultPollTime = 10000;
 
+    const { channel } = interaction;
+
+    const question = interaction.options.getString('string');
     const numOfAnswers = interaction.options.getInteger('int');
     const pollTime =
       interaction.options.getInteger('timeout') || defaultPollTime;
@@ -58,23 +64,31 @@ module.exports = {
         } seconds to submit your poll answers.\nPlease write each answer in different messages!`
       );
 
-      const messages = await interaction.channel.awaitMessages({
+      const userMessages = await interaction.channel.awaitMessages({
         filter: userFilter,
         time: defaultPromptTime,
         max: numOfAnswers,
         errors: ['time'],
       });
 
+      const pollEmbed = new MessageEmbed()
+        .setTitle(`${interaction.user.username} asks: ${question}`)
+        .setColor('PURPLE');
+
       const answers = [];
-      const test = new Map();
-      Array.from(messages.values()).forEach(({ content }, i) => {
+      const answersMap = new Map();
+
+      Array.from(userMessages.values()).forEach(({ content }, i) => {
         const emoji = pollEmojis[i];
 
         answers.push(`${emoji} : ${content}`);
-        test.set(emoji, content);
+        answersMap.set(emoji, content);
+        pollEmbed.addField('\u200b', `${emoji} : ${content}`, false);
       });
 
-      const pollMessage = await interaction.followUp(answers.join('\n'));
+      // await channel.send({ embeds: [pollEmbed] });
+
+      const pollMessage = await channel.send({ embeds: [pollEmbed] });
       const collector = pollMessage.createReactionCollector({
         filter: reactionFilter,
         time: pollTime,
@@ -84,42 +98,40 @@ module.exports = {
         await pollMessage.react(emoji);
       });
 
-      const finalResult = new Collection();
+      const result = new Collection();
 
-      // put everything inside this
       collector.on('end', async (collected) => {
         for (const [emoji, reaction] of collected) {
-          finalResult.set(emoji, {
-            answer: test.get(emoji),
-            count: reaction.count,
+          result.set(emoji, {
+            answer: answersMap.get(emoji),
+            receivedVotes: reaction.count,
           });
         }
 
-        const voteCounts = collected.map((reaction) => reaction.count);
-        const winnerCount = Math.max(...voteCounts);
-        const filteredWinners = finalResult.filter(
-          (result) => result.count === winnerCount && result.count > 1
+        const votes = collected.map((reaction) => reaction.count);
+        const max = Math.max(...votes);
+        const winners = result.filter(
+          ({ receivedVotes }) => receivedVotes === max && receivedVotes > 1
         );
 
-        // console.log({ filteredWinners });
-
-        if (!filteredWinners.size)
+        if (!winners.size)
           return interaction.followUp('Nobody participated in the poll!');
 
-        if (filteredWinners.size === numOfAnswers)
+        if (winners.size === numOfAnswers)
           return interaction.followUp(
-            `Every answer got the same amount of votes ${winnerCount}!`
+            `Every answer got the same amount of votes ${max}!`
           );
 
-        if (filteredWinners.size === 1 || filteredWinners.size > 1) {
-          const reply = Array.from(filteredWinners.values())
-            .map(({ answer, count }) => `${answer} - ${count} votes`)
+        if (winners.size >= 1) {
+          const reply = Array.from(winners.values())
+            .map(
+              ({ answer, receivedVotes }) =>
+                `${answer} - ${receivedVotes} votes`
+            )
             .join('\n');
 
           await interaction.followUp(
-            `${
-              filteredWinners.size > 1 ? 'Winners' : 'Winner'
-            } of the vote\n${reply}`
+            `${winners.size > 1 ? 'Winners' : 'Winner'} of the vote\n${reply}`
           );
         }
       });
