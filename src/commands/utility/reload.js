@@ -12,11 +12,6 @@ module.exports = {
    *
    * @param {import('discord.js').CommandInteraction} interaction
    */
-  // prompt user a command name
-  // check if it exists in the client.commands collection
-  // if not -> reply with error
-  // if exists remove the file from require.cache
-  // then load again
   async execute(interaction, client) {
     const commandName = interaction.options.getString('command');
     const command = client.commands.get(commandName);
@@ -24,7 +19,7 @@ module.exports = {
     if (!command) return interaction.reply('This command is not loaded..');
 
     if (!command.path)
-      return interaction.reply('The requested cannot be reloaded.');
+      return interaction.reply('The requested command cannot be reloaded.');
 
     delete require.cache[command.path];
 

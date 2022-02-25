@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { MessageEmbed, Collection } = require('discord.js');
+const { Collection, MessageEmbed } = require('discord.js');
 
-const { pollEmojis } = require('../../utils/emojiCharacters');
+const { defaultEmojis, pollEmojis } = require('../../utils/emojiCharacters');
 
 module.exports = {
   // use 'conf' obj
@@ -36,21 +36,20 @@ module.exports = {
    */
   async execute(interaction) {
     // todo
-    // optimize code
-    // clear user messages
-    // avoid using followUp()
     // correct try-catch
-    // correct variable naming - done
-    // prompt user the question
-    // use embed with emojis
     // set default poll time to 30s
     // if (reason === 'time') {
     //   return message.error('misc:TIMES_UP');
     // }
+    // calculate poll time depending on the currEmojis.length * 2s
     // ? graph
 
     const defaultPromptTime = 20000;
     const defaultPollTime = 10000;
+
+    const messagesToDelete = [];
+    const answers = new Collection();
+    const voteResult = new Collection();
 
     const { channel } = interaction;
 
@@ -65,7 +64,7 @@ module.exports = {
       currEmojis.includes(reaction.emoji.name);
 
     try {
-      const firstReply = await interaction.reply(
+      await interaction.reply(
         `Creating poll..\nNow you have ${
           defaultPollTime / 1000
         } seconds to submit your poll answers.\nPlease write each answer in different messages!`
@@ -79,11 +78,8 @@ module.exports = {
       });
 
       const pollEmbed = new MessageEmbed()
-        .setTitle(question)
+        .setTitle(`${defaultEmojis.chart} ${question}`)
         .setColor('PURPLE');
-
-      const messagesToDelete = [];
-      const answers = new Map();
 
       Array.from(userMessages.values()).forEach((message, i) => {
         const emoji = pollEmojis[i];
@@ -93,6 +89,7 @@ module.exports = {
         messagesToDelete.push(message);
       });
 
+      // delete messages to keep the channel clean
       await channel.bulkDelete(messagesToDelete);
       await interaction.deleteReply();
 
@@ -106,11 +103,9 @@ module.exports = {
         await pollMessage.react(emoji);
       });
 
-      const result = new Collection();
-
       collector.on('end', async (collected) => {
         for (const [emoji, reaction] of collected) {
-          result.set(emoji, {
+          voteResult.set(emoji, {
             answer: answers.get(emoji),
             receivedVotes: reaction.count,
           });
@@ -118,15 +113,15 @@ module.exports = {
 
         const votes = collected.map((reaction) => reaction.count);
         const max = Math.max(...votes);
-        const winners = result.filter(
+        const winners = voteResult.filter(
           ({ receivedVotes }) => receivedVotes === max && receivedVotes > 1
         );
 
         if (!winners.size)
-          return channel.send('Nobody participated in the poll!');
+          return pollMessage.reply('Nobody participated in the poll!');
 
         if (winners.size === numOfAnswers)
-          return channel.send(
+          return pollMessage.reply(
             `Every answer got the same amount of votes ${max}!`
           );
 
@@ -138,7 +133,7 @@ module.exports = {
             )
             .join('\n');
 
-          await channel.send(
+          await pollMessage.reply(
             `${winners.size > 1 ? 'Winners' : 'Winner'} of the vote\n${reply}`
           );
         }

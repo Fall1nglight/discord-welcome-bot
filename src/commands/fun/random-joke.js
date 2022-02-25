@@ -4,6 +4,14 @@ const axios = require('axios').default;
 const randomUseragent = require('random-useragent');
 
 module.exports = {
+  config: {
+    location: __filename,
+    cooldown: 2000,
+    ownerOnly: false,
+    dm: true,
+    aliases: [],
+  },
+
   data: new SlashCommandBuilder()
     .setName('random-joke')
     .setDescription('Gets you a random joke'),
