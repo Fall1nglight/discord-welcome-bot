@@ -4,6 +4,10 @@ const { MessageEmbed, Collection } = require('discord.js');
 const { pollEmojis } = require('../../utils/emojiCharacters');
 
 module.exports = {
+  // use 'conf' obj
+  path: __filename,
+  // location ->
+
   data: new SlashCommandBuilder()
     .setName('poll')
     .setDescription('Creates a poll')
@@ -40,6 +44,9 @@ module.exports = {
     // prompt user the question
     // use embed with emojis
     // set default poll time to 30s
+    // if (reason === 'time') {
+    //   return message.error('misc:TIMES_UP');
+    // }
     // ? graph
 
     const defaultPromptTime = 20000;
@@ -72,21 +79,22 @@ module.exports = {
       });
 
       const pollEmbed = new MessageEmbed()
-        .setTitle(`${interaction.user.username} asks: ${question}`)
+        .setTitle(question)
         .setColor('PURPLE');
 
-      const answers = [];
-      const answersMap = new Map();
+      const messagesToDelete = [];
+      const answers = new Map();
 
-      Array.from(userMessages.values()).forEach(({ content }, i) => {
+      Array.from(userMessages.values()).forEach((message, i) => {
         const emoji = pollEmojis[i];
 
-        answers.push(`${emoji} : ${content}`);
-        answersMap.set(emoji, content);
-        pollEmbed.addField('\u200b', `${emoji} : ${content}`, false);
+        answers.set(emoji, message.content);
+        pollEmbed.addField('\u200b', `${emoji} : ${message.content}`, false);
+        messagesToDelete.push(message);
       });
 
-      // await channel.send({ embeds: [pollEmbed] });
+      await channel.bulkDelete(messagesToDelete);
+      await interaction.deleteReply();
 
       const pollMessage = await channel.send({ embeds: [pollEmbed] });
       const collector = pollMessage.createReactionCollector({
@@ -103,7 +111,7 @@ module.exports = {
       collector.on('end', async (collected) => {
         for (const [emoji, reaction] of collected) {
           result.set(emoji, {
-            answer: answersMap.get(emoji),
+            answer: answers.get(emoji),
             receivedVotes: reaction.count,
           });
         }
@@ -115,10 +123,10 @@ module.exports = {
         );
 
         if (!winners.size)
-          return interaction.followUp('Nobody participated in the poll!');
+          return channel.send('Nobody participated in the poll!');
 
         if (winners.size === numOfAnswers)
-          return interaction.followUp(
+          return channel.send(
             `Every answer got the same amount of votes ${max}!`
           );
 
@@ -130,7 +138,7 @@ module.exports = {
             )
             .join('\n');
 
-          await interaction.followUp(
+          await channel.send(
             `${winners.size > 1 ? 'Winners' : 'Winner'} of the vote\n${reply}`
           );
         }
