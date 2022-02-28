@@ -20,6 +20,7 @@
     "consistent-return": "off",
     "global-require": "off",
     "no-await-in-loop": "off",
+    "no-continue": "off",
     "import/no-dynamic-require": "off",
     "no-process-exit": "off",
     "node/no-unpublished-require": "off"

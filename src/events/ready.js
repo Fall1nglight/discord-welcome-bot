@@ -1,5 +1,7 @@
+const { EVENTS } = require('../utils/utils');
+
 module.exports = {
-  name: 'ready',
+  name: EVENTS.ready,
   once: true,
 
   execute(client) {

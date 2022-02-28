@@ -3,13 +3,15 @@ const { Permissions } = require('discord.js');
 const axios = require('axios').default;
 const randomUseragent = require('random-useragent');
 
+const { CATEGORIES } = require('../../utils/utils');
+
 module.exports = {
   config: {
     location: __filename,
-    cooldown: 2000,
     ownerOnly: false,
     dm: true,
-    aliases: [],
+    category: CATEGORIES.utility,
+    cooldown: 8000,
   },
 
   data: new SlashCommandBuilder()

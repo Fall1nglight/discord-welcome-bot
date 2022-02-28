@@ -1,8 +1,16 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-// todo: if (!message.guild) return;
+const { CATEGORIES } = require('../../utils/utils');
 
 module.exports = {
+  config: {
+    location: __filename,
+    ownerOnly: false,
+    dm: false,
+    category: CATEGORIES.utility,
+    cooldown: 3000,
+  },
+
   data: new SlashCommandBuilder()
     .setName('unban')
     .setDescription('Unbans member')

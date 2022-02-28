@@ -2,7 +2,17 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
 const { format } = require('date-fns');
 
+const { CATEGORIES } = require('../../utils/utils');
+
 module.exports = {
+  config: {
+    location: __filename,
+    ownerOnly: false,
+    dm: false,
+    category: CATEGORIES.utility,
+    cooldown: 3000,
+  },
+
   data: new SlashCommandBuilder()
     .setName('member-info')
     .setDescription('Display info about @member')

@@ -1,7 +1,17 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { bold } = require('@discordjs/builders');
 
+const { CATEGORIES } = require('../../utils/utils');
+
 module.exports = {
+  config: {
+    location: __filename,
+    ownerOnly: false,
+    dm: false,
+    category: CATEGORIES.utility,
+    cooldown: 3000,
+  },
+
   data: new SlashCommandBuilder()
     .setName('clear')
     .setDescription('Deletes messages')
@@ -19,6 +29,8 @@ module.exports = {
 
   // todo
   // use optional chaining (?)
+  // when there aren't any messages
+  // it fails -> fix
 
   async execute(interaction, client) {
     const { channelId } = interaction;

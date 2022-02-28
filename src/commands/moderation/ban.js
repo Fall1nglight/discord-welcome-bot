@@ -1,6 +1,16 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
+const { CATEGORIES } = require('../../utils/utils');
+
 module.exports = {
+  config: {
+    location: __filename,
+    ownerOnly: false,
+    dm: false,
+    category: CATEGORIES.utility,
+    cooldown: 3000,
+  },
+
   data: new SlashCommandBuilder()
     .setName('ban')
     .setDescription('Bans a member')

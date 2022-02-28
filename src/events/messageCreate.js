@@ -1,7 +1,8 @@
+const { EVENTS } = require('../utils/utils');
 const { prefix } = require('../../config.json');
 
 module.exports = {
-  name: 'messageCreate',
+  name: EVENTS.messageCreate,
   once: false,
 
   async execute(message, client) {

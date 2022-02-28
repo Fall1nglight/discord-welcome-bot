@@ -1,8 +1,16 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
-const { tiers } = require('../../utils/constans');
+const { CATEGORIES, TIERS } = require('../../utils/utils');
 
 module.exports = {
+  config: {
+    location: __filename,
+    ownerOnly: false,
+    dm: false,
+    category: CATEGORIES.utility,
+    cooldown: 3000,
+  },
+
   data: new SlashCommandBuilder()
     .setName('server-info')
     .setDescription('Displays information about the server'),
@@ -37,7 +45,7 @@ module.exports = {
       .addField('Online users', `${onlineMembers.size}`, true)
       .addField('Number of roles', `${roles.size}`, true)
       .addField('Server boosters', `${premiumSubscriptionCount}`, true)
-      .addField('Current boost level', tiers[premiumTier], true)
+      .addField('Current boost level', TIERS[premiumTier], true)
       .addField('Owner', `${owner}`, true)
       .setFooter({ text: `${name} | Id: ${id}` });
 

@@ -1,25 +1,53 @@
-const { checkPerm } = require('../utils/utils');
+const { EVENTS } = require('../utils/utils');
 
 module.exports = {
-  name: 'interactionCreate',
+  name: EVENTS.interactionCreate,
   once: false,
 
+  /**
+   *
+   * @param {import('discord.js').CommandInteraction} interaction
+   */
   async execute(interaction, client) {
     if (!interaction.isCommand()) return;
 
-    const command = client.commands.get(interaction.commandName);
-    if (!command) return;
+    const { commandName } = interaction;
 
-    console.log(
-      `${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`
-    );
+    const command = client.commands.get(commandName);
 
-    // if the command has permissions
-    if (command.clientPerms) {
-      if (!checkPerm(interaction.member, command.clientPerms)) {
-        return interaction.reply('You cannot use this command!');
-      }
-    }
+    if (!command)
+      return interaction.reply(
+        'This command cannot be executed at the moment...\nPlease try again later!'
+      );
+
+    if (
+      command.config.ownerOnly &&
+      interaction.user.id !== interaction.guild?.ownerId
+    )
+      return interaction.reply(
+        'This command can be only executed by the Owner of the server!'
+      );
+
+    if (command.config.dm === false && interaction.guild === null)
+      return interaction.reply('This command cannot be executed in DMs!');
+
+    const currTime = new Date().getTime();
+    const commandCooldowns = client.cooldowns.get(commandName);
+    const clientCooldown = commandCooldowns.get(interaction.member.id);
+
+    if (clientCooldown && clientCooldown.expiresAt > currTime)
+      return interaction.reply(
+        `You have to wait ${
+          (clientCooldown.expiresAt - currTime) / 1000
+        } second(s) before executing this command!`
+      );
+
+    commandCooldowns.set(interaction.member.id, {
+      executedAt: currTime,
+      expiresAt: currTime + command.config.cooldown,
+    });
+
+    client.cooldowns.set(commandName, commandCooldowns);
 
     try {
       await command.execute(interaction, client);

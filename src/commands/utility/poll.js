@@ -1,12 +1,17 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Collection, MessageEmbed } = require('discord.js');
 
+const { CATEGORIES, COLORS } = require('../../utils/utils');
 const { defaultEmojis, pollEmojis } = require('../../utils/emojiCharacters');
 
 module.exports = {
-  // use 'conf' obj
-  path: __filename,
-  // location ->
+  config: {
+    location: __filename,
+    ownerOnly: false,
+    dm: false,
+    category: CATEGORIES.utility,
+    cooldown: 3000,
+  },
 
   data: new SlashCommandBuilder()
     .setName('poll')
@@ -79,7 +84,7 @@ module.exports = {
 
       const pollEmbed = new MessageEmbed()
         .setTitle(`${defaultEmojis.chart} ${question}`)
-        .setColor('PURPLE');
+        .setColor(COLORS.BLUE);
 
       Array.from(userMessages.values()).forEach((message, i) => {
         const emoji = pollEmojis[i];
