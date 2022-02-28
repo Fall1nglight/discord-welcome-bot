@@ -1,8 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { Collection, MessageEmbed } = require('discord.js');
 
-const { CATEGORIES, COLORS } = require('../../utils/utils');
-const { defaultEmojis, pollEmojis } = require('../../utils/emojiCharacters');
+const { CATEGORIES, COLORS, emojiCharacters } = require('../../utils/utils');
 
 module.exports = {
   config: {
@@ -52,6 +51,19 @@ module.exports = {
     const defaultPromptTime = 20000;
     const defaultPollTime = 10000;
 
+    const pollEmojis = [
+      '🇦',
+      '🇧',
+      '🇨',
+      '🇩',
+      '🇪',
+      '🇫',
+      '🇬',
+      '🇭',
+      '🇮',
+      '🇯',
+    ];
+
     const messagesToDelete = [];
     const answers = new Collection();
     const voteResult = new Collection();
@@ -83,7 +95,7 @@ module.exports = {
       });
 
       const pollEmbed = new MessageEmbed()
-        .setTitle(`${defaultEmojis.chart} ${question}`)
+        .setTitle(`${emojiCharacters.chart} ${question}`)
         .setColor(COLORS.BLUE);
 
       Array.from(userMessages.values()).forEach((message, i) => {

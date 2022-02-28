@@ -1,4 +1,4 @@
-const { EVENTS } = require('../utils/utils');
+const { EVENTS, commandConfigProperties } = require('../utils/utils');
 
 module.exports = {
   name: EVENTS.interactionCreate,
@@ -19,6 +19,13 @@ module.exports = {
       return interaction.reply(
         'This command cannot be executed at the moment...\nPlease try again later!'
       );
+
+    const currProperties = Object.keys(command.config);
+    for (const property of currProperties) {
+      if (!commandConfigProperties.includes(property)) return;
+      // do not load the command
+      // move it to register commands
+    }
 
     if (
       command.config.ownerOnly &&

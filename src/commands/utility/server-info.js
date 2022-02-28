@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed } = require('discord.js');
+
 const { CATEGORIES, TIERS } = require('../../utils/utils');
 
 module.exports = {

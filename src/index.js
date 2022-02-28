@@ -8,6 +8,8 @@ const { token } = require('../config.json');
 // setup database
 // disable command cooldown when command is executed by
 // specific role / user / member
+// validate commands because later we will be doing
+// database operations
 
 (async () => {
   try {

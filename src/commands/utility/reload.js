@@ -21,19 +21,20 @@ module.exports = {
   /**
    *
    * @param {import('discord.js').CommandInteraction} interaction
+   * @param {import('discord.js').Client}
    */
   async execute(interaction, client) {
     const commandName = interaction.options.getString('command');
     const command = client.commands.get(commandName);
 
     if (!command) return interaction.reply('This command is not loaded..');
-
     if (!command.config.location)
       return interaction.reply('The requested command cannot be reloaded.');
 
     delete require.cache[command.config.location];
 
     const reloadedCommand = require(command.config.location);
+
     client.commands.set(reloadedCommand.data.name, reloadedCommand);
 
     await interaction.reply(`Successfully reloaded ${commandName}!`);
