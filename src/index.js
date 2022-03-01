@@ -8,8 +8,15 @@ const { token } = require('../config.json');
 // setup database
 // disable command cooldown when command is executed by
 // specific role / user / member
-// validate commands because later we will be doing
-// database operations
+
+// todo
+// welcome message module
+// set channel id
+// set default
+// option to add more
+
+// amikor a bot csatlakozik egy szerverre
+// létrehozunk egy kollekciót az adatbázisunkban
 
 (async () => {
   try {

@@ -52,9 +52,9 @@ const CATEGORIES = {
 const EVENTS = {
   apiRequest: 'apiRequest',
   apiResponse: 'apiResponse',
-  applicationCommandCreateD: 'applicationCommandCreateD',
-  applicationCommandDeleteD: 'applicationCommandDeleteD',
-  applicationCommandUpdateD: 'applicationCommandUpdateD',
+  applicationCommandCreate: 'applicationCommandCreate',
+  applicationCommandDelete: 'applicationCommandDelete',
+  applicationCommandUpdate: 'applicationCommandUpdate',
   channelCreate: 'channelCreate',
   channelDelete: 'channelDelete',
   channelPinsUpdate: 'channelPinsUpdate',
@@ -81,13 +81,13 @@ const EVENTS = {
   guildScheduledEventUserRemove: 'guildScheduledEventUserRemove',
   guildUnavailable: 'guildUnavailable',
   guildUpdate: 'guildUpdate',
-  interactionD: 'interactionD',
+  interaction: 'interaction',
   interactionCreate: 'interactionCreate',
   invalidated: 'invalidated',
   invalidRequestWarning: 'invalidRequestWarning',
   inviteCreate: 'inviteCreate',
   inviteDelete: 'inviteDelete',
-  messageD: 'messageD',
+  message: 'message',
   messageCreate: 'messageCreate',
   messageDelete: 'messageDelete',
   messageDeleteBulk: 'messageDeleteBulk',
@@ -171,7 +171,7 @@ const emojiCharacters = {
   chart: '📊',
 };
 
-const commandConfigProperties = [
+const defaultCmdConfKeys = [
   'location',
   'ownerOnly',
   'dm',
@@ -213,7 +213,7 @@ module.exports = {
   CATEGORIES,
   EVENTS,
   emojiCharacters,
-  commandConfigProperties,
+  defaultCmdConfKeys,
   readFiles,
   checkPerm,
 };

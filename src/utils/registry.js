@@ -1,8 +1,7 @@
 const { Collection } = require('discord.js');
 const AsciiTable = require('ascii-table');
 
-const { readFiles } = require('./utils');
-const { EVENTS } = require('./utils');
+const { readFiles, EVENTS, defaultCmdConfKeys } = require('./utils');
 
 const registerEvents = async (client, givenPath) => {
   const Table = new AsciiTable('Events');
@@ -39,14 +38,25 @@ const registerCommands = async (client, givenPath) => {
   for (const file of commandFiles) {
     const command = require(file);
 
+    // name check
     if (!command.data?.name) {
-      Table.addRow('Missing name', '✖ Failed to load');
+      Table.addRow('Missing name', '✖ Command name is invalid or missing');
       continue;
     }
 
     const {
       data: { name: commandName },
     } = command;
+
+    // config check
+    const cmdConfKeys = Object.keys(command.config);
+    const assignedKeys = [...defaultCmdConfKeys, ...cmdConfKeys];
+    const set = new Set(assignedKeys);
+
+    if (set.size !== defaultCmdConfKeys.length) {
+      Table.addRow(commandName, '✖ Command config is invalid or missing');
+      continue;
+    }
 
     client.commands.set(commandName, command);
     client.cooldowns.set(commandName, new Collection());
