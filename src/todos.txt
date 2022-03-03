@@ -1,0 +1,22 @@
+// todo
+// setup logger
+// setup permission system
+// setup database
+// disable command cooldown when command is executed by
+// specific role / user / member
+
+// todo
+// welcome message module
+// set channel id
+// set default
+// option to add more
+
+// amikor a bot csatlakozik egy szerverre
+// létrehozunk egy kollekciót az adatbázisunkban
+
+// fix
+// ha nincs üzenet a clear-be crash
+
+// kell egy olyan parancs amely újratölti az
+// adatbázisban lévő adatokat
+// legyen egy activeMessageIds az adatbázisban
